@@ -28,6 +28,9 @@ main(int argc, char *argv[])
     else if (pid == 0)
     {
         /*read one character from parent process*/
+        close(fd_parent_to_child[1]);
+        close(fd_child_to_parent[0]);
+
         if(read(fd_parent_to_child[0], &buf_char, sizeof(buf_char)) != sizeof(buf_char))
         {
             printf("read from parent error!\n");
@@ -48,10 +51,17 @@ main(int argc, char *argv[])
         {
             status = 0;
         }
+
+        close(fd_parent_to_child[0]);
+        close(fd_child_to_parent[1]);
+
     }
     else
     {
          /*read one character from parent process*/
+        close(fd_parent_to_child[0]);
+        close(fd_child_to_parent[1]);
+
         if(write(fd_parent_to_child[1], &buf_char, sizeof(buf_char)) != sizeof(buf_char))
         {
             printf("write to child error!\n");
@@ -71,7 +81,10 @@ main(int argc, char *argv[])
         {
             printf("%d: received pong\n", getpid());
             status = 0;
-        }       
+        }
+        
+        close(fd_parent_to_child[1]);
+        close(fd_child_to_parent[0]);
     }
 
     exit(status);
